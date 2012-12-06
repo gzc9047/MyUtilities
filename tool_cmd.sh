@@ -1,5 +1,33 @@
 #!/bin/bash
 
+# grep code
+gc()
+{
+    if [ $# -lt 1 ]
+    then
+        echo need item.
+        return 1
+    fi
+    echo =========================================split line================================================
+    echo "#"
+    echo "#"
+    grep --exclude=.git "$1" -Rn . | grep '\.h:\|\.cpp:\|\.c:\|\.cc:\|\.[sS]:\|\.asm'
+}
+
+# alarm me.
+am()
+{
+    if [ $# -lt 2 ]
+    then
+        echo need time comment.
+        return 1
+    fi
+    times=$1
+    comment=$2
+    echo "`date +%Y:%m:%d:%H:%M:%S` $times $comment" >> $TMPDIR/am_list
+    sleep $times && open "http://localhost/alarm/index.html?$comment" &
+}
+
 # 所有需要制定列号的参数都可以制定多列：
 # sf - '3 4' => awk '{print $3, $4}'
 # sf - '3 (NF-1)' => awk '{print $3, $(NF-1)}'
