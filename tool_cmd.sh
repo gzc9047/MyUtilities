@@ -24,8 +24,12 @@ am()
     fi
     times=$1
     comment=$2
-    echo "`date +%Y:%m:%d:%H:%M:%S` $times $comment" >> $TMPDIR/am_list
-    sleep $times && open "http://localhost/alarm/index.html?$comment" &
+    now=`date +%Y:%m:%d:%H:%M:%S`
+    echo "$now $times $comment" >> $TMPDIR/am_list
+    sleep $times && \
+        open "http://localhost/alarm/index.html?$comment" && \
+        echo "$now DONE $times $comment" >> $TMPDIR/am_list \
+        &
 }
 
 # 所有需要制定列号的参数都可以制定多列：
