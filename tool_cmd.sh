@@ -11,7 +11,7 @@ gc()
     echo =========================================split line================================================
     echo "#"
     echo "#"
-    grep --exclude=.git "$1" -Rn . | grep '\.h:\|\.cpp:\|\.c:\|\.cc:\|\.[sS]:\|\.asm'
+    grep --exclude=.git "$1" -RIn . | grep '\.h:\|\.cpp:\|\.c:\|\.cc:\|\.[sS]:\|\.asm'
 }
 
 # alarm me.
@@ -33,12 +33,12 @@ am()
 }
 
 # 所有需要制定列号的参数都可以制定多列：
-# sf - '3 4' => awk '{print $3, $4}'
-# sf - '3 (NF-1)' => awk '{print $3, $(NF-1)}'
+# x - '3 4' => awk '{print $3, $4}'
+# x - '3 (NF-1)' => awk '{print $3, $(NF-1)}'
 
 # count($column)
 # cat $file | sf - 3
-# cat $file | sf - 3 :
+# cat $file | sf - 3 : # split columns with ':'
 # sf $file 3 :
 sf()
 {
@@ -61,8 +61,8 @@ sf()
 }
 
 # count($column) with weight($column2)
-# cat $file | adf - 99 2 # 对第二列求和。
-# cat $file | adf - 3 2 :
+# cat $file | adf - 99 2 # value[$99] += $2; $99 not exist, so $99 = "", means sum $2.
+# cat $file | adf - 3 2 : # split columns with ':'
 # adf $file 3 1 :
 adf()
 {
@@ -91,7 +91,7 @@ adf()
 
 # show common in 2 file
 # scf $file1 $file2 $outfile1 $outfile2 $key1 $key2
-# scf f1 f2 0 3 '2 5' '3 6' # 输出f1中2、5列等于f2中3、6列的f1整行和f2的第三列。
+# scf f1 f2 0 3 '2 5' '3 6' # output $0 in f1 and $3 in f2, when '$2 $3' in f1 == '$3 $6' in f2
 scf()
 {
     keyCol1='$1'
@@ -137,8 +137,7 @@ scf()
     return $?
 }
 
-# show not common in 2 file
-# 输出两个文件不共有的行。
+# show uniq part in file1, compare to scf command.
 sncf()
 {
     keyCol1='$1'
@@ -189,7 +188,7 @@ x()
 {
     if [ $# -lt 1 ]
     then
-        echo need 2 file.
+        echo need 2 parameter.
         return 1
     elif [ $# -lt 2 ]
     then
