@@ -1,4 +1,4 @@
-#4 useful shell statistic function: x sf adf scf
+#4 useful shell statistic function: x sf adf scf. in tool\_cmd.sh
 // My English is poor.
 
 Use these shell function, I'm rarely need to write awk script for daily use.
