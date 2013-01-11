@@ -79,7 +79,7 @@ column before last in file:
 608
 808
 
-x - 'NF-1' means the last column with value-1;
+# x - 'NF-1' means the last column with value-1; awk '{print $NF-1}' -
 
 -1
 
@@ -91,7 +91,7 @@ x - 'NF-1' means the last column with value-1;
 
 # sf() like select count(\*) from file group by column. For example, if you want:
 count of 1st column appear times in $file:
-// use the apache log on above.
+// use the example data of apache log.
 # sf $file 1
 
 127.0.0.1 4
