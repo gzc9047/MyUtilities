@@ -7,7 +7,6 @@ Use these shell function, you can write the complex data process shell very fast
 
 Then you can do other things or just wait the result.
 
-# x()    like cut. For example, if you want:
 content of the example file, apache log:
 
 127.0.0.1 - - [24/Nov/2012:20:18:12 +0800] "GET / HTTP/1.1" 304 -
@@ -17,6 +16,8 @@ content of the example file, apache log:
 127.0.0.1 - - [24/Nov/2012:20:18:14 +0800] "GET / HTTP/1.1" 304 -
 
 127.0.0.1 - - [24/Nov/2012:20:18:14 +0800] "GET /favicon.ico HTTP/1.1" 404 209
+
+# x()    like cut. For example, if you want:
 
 the 1st column in file:
 
@@ -89,8 +90,8 @@ x - 'NF-1' means the last column with value-1;
 208
 
 # sf() like select count(\*) from file group by column. For example, if you want:
-// use the apache log on above.
 count of 1st column appear times in $file:
+// use the apache log on above.
 # sf $file 1
 
 127.0.0.1 4
@@ -119,21 +120,21 @@ adf $file 2 10 => awk '{num[$2]+=$10} END{for (i in num) print i, num[i]}' $file
 adf $file '2 (NF-1)' '9\*2' => awk '{num[$2" "$(NF-1)]+=$9\*2} END{for (i in num) print i, num[i]}' $file
 # The code is very short, you can write it in few seconds.
 
-# scf(), like the "join" command, but you can specify multi column(in any order) for the SAMEKEY between 2 file. If you want:
+# scf(), like the "join" command, but you can specify multi column(in any order) for the SAMEKEY between 2 file.
 
 FILE1:
 
-Louix M 1986 Beijing
+Louix M 10085 Beijing
 
 FILE2:
 
-1986 Louix China
+10085 Louix China
 
-the whole line of two file in one line, while 1st 3rd column in file1 is equal 2nd 1st column in file2:
+If you want the whole line of two file in one line, while 1st 3rd column in file1 is equal 2nd 1st column in file2:
 # scf $file1 $file2 0 0 '1 3' '2 1' // 0 means the whole line, $0 in the awk script.
 # result is:
 
-Louix Gu 1986 Beijing 1986 Louix China
+Louix Gu 10085 Beijing 10085 Louix China
 
 It's a little noisy, we just want the first name(1st column in file1) and country(2nd column in file2), use:
 # scf $file1 $file2 1 3 '1 3' '2 1'
