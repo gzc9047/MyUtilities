@@ -110,7 +110,7 @@ GET / HTTP/1.1 2
 
 GET /favicon.ico HTTP/1.1 2
 
-# parameter of column choose was in same format of this 4 function.
+# Parameter of choosing column is the same format of this 4 function.
 
 # adf() sum the specify column with weight(another column)
 // this example was translate to awk form.
