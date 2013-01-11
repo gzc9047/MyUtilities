@@ -59,7 +59,7 @@ Nov
 404
 
 # 99th column (maybe not exist) in stdin:
-# - 99
+# x - 99
 
 (4 EMPTY row)
 
@@ -73,7 +73,7 @@ Nov
 608
 808
 
-# - 'NF-1' means the last column with value-1;
+# x - 'NF-1' means the last column with value-1;
 
 -1
 
@@ -83,7 +83,7 @@ Nov
 
 208
 
-# sf like select count(\*) from file group by $YOU_NEED. For example, if you want:
+# sf() like select count(\*) from file group by $YOU_NEED. For example, if you want:
 // use the apache log on above.
 # count of 1st column appear times in $file:
 # sf $file 1
@@ -105,11 +105,12 @@ GET / HTTP/1.1 2
 GET /favicon.ico HTTP/1.1 2
 
 # parameter of column choose was in same format of this 4 function.
-# adf sum the specify column with weight(another column)
+# adf() sum the specify column with weight(another column)
 // this example was translate to awk form.
 # adf $file 2 10 => awk '{num[$2]+=$10} END{for (i in num) print i, num[i]}' $file
 # adf $file '2 (NF-1)' '9\*2' => awk '{num[$2" "$(NF-1)]+=$9\*2} END{for (i in num) print i, num[i]}' $file
 # The code is very short, you can write it in few seconds.
+
 # scf(), like join, but you can specify multi column(in any order) for the SAMEKEY between 2 file. If you want:
 # the whole line of two file in one line, while 1st 3rd column in file1 is equal 2nd 1st column in file2:
 
