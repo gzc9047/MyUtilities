@@ -1,8 +1,12 @@
 #4 useful shell statistic function: x sf adf scf
 // My English is poor.
+
 Use these shell function, I'm rarely need to write awk script for daily use.
+
 Use these shell function, you can write the complex data process shell very fast, in several seconds.
+
 Then you can do other things or just wait the result.
+
 # x()    like cut. For example, if you want:
 content of the example file, apache log:
 
@@ -115,7 +119,7 @@ adf $file 2 10 => awk '{num[$2]+=$10} END{for (i in num) print i, num[i]}' $file
 adf $file '2 (NF-1)' '9\*2' => awk '{num[$2" "$(NF-1)]+=$9\*2} END{for (i in num) print i, num[i]}' $file
 # The code is very short, you can write it in few seconds.
 
-# scf(), like join, but you can specify multi column(in any order) for the SAMEKEY between 2 file. If you want:
+# scf(), like the "join" command, but you can specify multi column(in any order) for the SAMEKEY between 2 file. If you want:
 
 FILE1:
 
