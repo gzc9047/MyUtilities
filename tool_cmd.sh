@@ -14,6 +14,21 @@ gc()
     grep --exclude=.git "$1" -RIn . | grep '\.h:\|\.cpp:\|\.c:\|\.cc:\|\.[sS]:\|\.asm'
 }
 
+# grep function define
+gd()
+{
+    if [ $# -lt 1 ]
+    then
+        echo need item.
+        return 1
+    fi
+    echo =========================================split line================================================
+    echo "#"
+    echo "#"
+    t=`echo -e "\t"`
+    git grep -nI --break --heading --or -e "^[^$t]* $1(" -e "^$1("
+}
+
 # alarm me.
 am()
 {
