@@ -116,7 +116,6 @@ adf $file '2 (NF-1)' '9\*2' => awk '{num[$2" "$(NF-1)]+=$9\*2} END{for (i in num
 # The code is very short, you can write it in few seconds.
 
 # scf(), like join, but you can specify multi column(in any order) for the SAMEKEY between 2 file. If you want:
-the whole line of two file in one line, while 1st 3rd column in file1 is equal 2nd 1st column in file2:
 
 FILE1:
 
@@ -126,6 +125,7 @@ FILE2:
 
 1986 Louix China
 
+the whole line of two file in one line, while 1st 3rd column in file1 is equal 2nd 1st column in file2:
 # scf $file1 $file2 0 0 '1 3' '2 1' // 0 means the whole line, $0 in the awk script.
 # result is:
 
