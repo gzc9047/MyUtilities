@@ -11,7 +11,23 @@ gc()
     echo =========================================split line================================================
     echo "#"
     echo "#"
-    grep --exclude=.git "$1" -RIn . | grep '\.h:\|\.cpp:\|\.c:\|\.cc:\|\.[sS]:\|\.asm'
+    grep --exclude=. "$1" -RIn . | \
+        grep '\.java:\|\.h:\|\.hpp:\|\.cpp:\|\.c:\|\.cc:\|\.[sS]:\|\.asm' | \
+        grep --color "$1"
+}
+
+# grep target use
+gu()
+{
+    if [ $# -lt 1 ]
+    then
+        echo need item.
+        return 1
+    fi
+    echo =========================================split line================================================
+    echo "#"
+    echo "#"
+    git grep -nI --break --heading "[^\"a-zA-Z_0-9]$1[^\"a-zA-Z_0-9]"
 }
 
 # grep function define
@@ -26,7 +42,7 @@ gd()
     echo "#"
     echo "#"
     t=`echo -e "\t"`
-    git grep -nI --break --heading --or -e "^[^$t]* $1(" -e "^$1("
+    git grep -nI --break --heading --or -e "^[^=$t]*[ \*]$1(" -e "^$1(" -e "define[^a-zA-Z0-9_]*$1[^a-zA-Z0-9_]"
 }
 
 # alarm me.
@@ -139,7 +155,7 @@ scf()
     then
         spl="$7"
     fi
-    awk -F "$spl" '{
+    gawk -F "$spl" '{
         if ( 1 == ARGIND )
         {
             key[ '"$keyCol1"' ] = '"$outCol1"';
@@ -152,7 +168,7 @@ scf()
     return $?
 }
 
-# show uniq part in file1, compare to scf command.
+# show uniq part in file2, compare to scf command.
 sncf()
 {
     keyCol1='$1'
@@ -185,7 +201,7 @@ sncf()
     then
         spl="$7"
     fi
-    awk -F "$spl" '{
+    gawk -F "$spl" '{
         if ( 1 == ARGIND )
         {
             key[ '"$keyCol1"' ] = '"$outCol1"';
