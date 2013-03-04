@@ -3,6 +3,7 @@
 alias grep_code_filte_file_name="grep '\.java:\|\.h:\|\.hpp:\|\.cpp:\|\.c:\|\.cc:\|\.[sS]:\|\.asm'"
 export grep_code_split_pattern_start="[^\"a-zA-Z0-9_]"
 export grep_code_split_pattern_end="[^\"a-zA-Z0-9_;]"
+export JAVA_API_LIST=~/3/code_mine/java_learn/java.api.list
 
 # grep code non-filte file.
 gn()
@@ -62,6 +63,20 @@ gu()
 }
 
 # grep java method info
+gj()
+{
+    if [ $# -lt 1 ]
+    then
+        echo need item.
+        return 1
+    fi
+    echo =========================================split line================================================
+    echo "#"
+    echo "#"
+    grep --color "$1" $JAVA_API_LIST
+}
+
+# grep java method info
 gjm()
 {
     if [ $# -lt 1 ]
@@ -78,7 +93,7 @@ gjm()
 # column 1: class name
 # column 2: method declaraton class name
 # reset column method signature
-    grep --color " [^ ]*$1[^ ]*(" ~/3/code_mine/java_learn/java.api.list
+    grep --color " [^ ]*$1[^ ]*(" $JAVA_API_LIST
 }
 
 # grep function define
