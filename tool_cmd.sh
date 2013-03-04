@@ -1,5 +1,23 @@
 #!/bin/bash
 
+alias grep_code_filte_file_name="grep '\.java:\|\.h:\|\.hpp:\|\.cpp:\|\.c:\|\.cc:\|\.[sS]:\|\.asm'"
+export grep_code_split_pattern_start="[^\"a-zA-Z0-9_]"
+export grep_code_split_pattern_end="[^\"a-zA-Z0-9_;]"
+
+# grep code non-filte file.
+gn()
+{
+    if [ $# -lt 1 ]
+    then
+        echo need item.
+        return 1
+    fi
+    echo =========================================split line================================================
+    echo "#"
+    echo "#"
+    grep --exclude=. --color -RIn "$1" .
+}
+
 # grep code
 gc()
 {
@@ -11,9 +29,22 @@ gc()
     echo =========================================split line================================================
     echo "#"
     echo "#"
-    grep --exclude=. "$1" -RIn . | \
-        grep '\.java:\|\.h:\|\.hpp:\|\.cpp:\|\.c:\|\.cc:\|\.[sS]:\|\.asm' | \
-        grep --color "$1"
+    grep --exclude=. -RIn  "$1" . | grep_code_filte_file_name | grep --color "$1"
+}
+
+# grep code
+gcd()
+{
+    if [ $# -lt 1 ]
+    then
+        echo need item.
+        return 1
+    fi
+    echo =========================================split line================================================
+    echo "#"
+    echo "#"
+    grep --exclude=. "$grep_code_split_pattern_start""$1""$grep_code_split_pattern_end\|^$1""$grep_code_split_pattern_end" -RIn . | \
+        grep_code_filte_file_name | grep --color "$1"
 }
 
 # grep target use
@@ -27,7 +58,7 @@ gu()
     echo =========================================split line================================================
     echo "#"
     echo "#"
-    git grep -nI --break --heading "[^\"a-zA-Z_0-9]$1[^\"a-zA-Z_0-9]"
+    git grep -nI --break --heading "$grep_code_split_pattern_start""$1""$grep_code_split_pattern_start"
 }
 
 # grep function define
@@ -42,7 +73,7 @@ gd()
     echo "#"
     echo "#"
     t=`echo -e "\t"`
-    git grep -nI --break --heading --or -e "^[^=$t]*[ \*]$1(" -e "^$1(" -e "define[^a-zA-Z0-9_]*$1[^a-zA-Z0-9_]"
+    git grep -nI --break --heading --or -e "^[^=$t]*[ \*]$1[ $t]*(" -e "^$1[ $t]*(" -e "define[^a-zA-Z0-9_]*$1[^a-zA-Z0-9_]"
 }
 
 # alarm me.
@@ -67,6 +98,8 @@ am()
 # x - '3 4' => awk '{print $3, $4}'
 # x - '3 (NF-1)' => awk '{print $3, $(NF-1)}'
 
+alias generate_awk_line_choose_code_with_sed='sed "s/ /\" \"\$/g;s/^/\$/g"'
+
 # count($column)
 # cat $file | sf - 3
 # cat $file | sf - 3 : # split columns with ':'
@@ -80,7 +113,7 @@ sf()
         return 1
     elif [ $# -gt 1 ]
     then
-        keyCol="`echo "$2" | sed 's/ /\" \"\$/g;s/^/\$/g'`"
+        keyCol="`echo "$2" | generate_awk_line_choose_code_with_sed`"
     fi
     spl=" "
     if [ $# -gt 2 ]
@@ -105,10 +138,10 @@ adf()
         return 1
     elif [ $# -eq 2 ]
     then
-        keyCol="`echo "$2" | sed 's/ /\" \"\$/g;s/^/\$/g'`"
+        keyCol="`echo "$2" | generate_awk_line_choose_code_with_sed`"
     elif [ $# -eq 3 ]
     then
-        keyCol="`echo "$2" | sed 's/ /\" \"\$/g;s/^/\$/g'`"
+        keyCol="`echo "$2" | generate_awk_line_choose_code_with_sed`"
         valCol="$3"
     fi
     spl=" "
@@ -136,19 +169,19 @@ scf()
     fi
     if [ $# -gt 2 ]
     then
-        outCol1="`echo "$3" | sed 's/ /\" \"\$/g;s/^/\$/g'`"
+        outCol1="`echo "$3" | generate_awk_line_choose_code_with_sed`"
     fi
     if [ $# -gt 5 ]
     then
-        outCol2="`echo "$4" | sed 's/ /\" \"\$/g;s/^/\$/g'`"
+        outCol2="`echo "$4" | generate_awk_line_choose_code_with_sed`"
     fi
     if [ $# -gt 4 ]
     then
-        keyCol1="`echo "$5" | sed 's/ /\" \"\$/g;s/^/\$/g'`"
+        keyCol1="`echo "$5" | generate_awk_line_choose_code_with_sed`"
     fi
     if [ $# -gt 5 ]
     then
-        keyCol2="`echo "$6" | sed 's/ /\" \"\$/g;s/^/\$/g'`"
+        keyCol2="`echo "$6" | generate_awk_line_choose_code_with_sed`"
     fi
     spl=" "
     if [ $# -gt 6 ]
@@ -182,19 +215,19 @@ sncf()
     fi
     if [ $# -gt 2 ]
     then
-        outCol1="`echo "$3" | sed 's/ /\" \"\$/g;s/^/\$/g'`"
+        outCol1="`echo "$3" | generate_awk_line_choose_code_with_sed`"
     fi
     if [ $# -gt 5 ]
     then
-        outCol2="`echo "$4" | sed 's/ /\" \"\$/g;s/^/\$/g'`"
+        outCol2="`echo "$4" | generate_awk_line_choose_code_with_sed`"
     fi
     if [ $# -gt 4 ]
     then
-        keyCol1="`echo "$5" | sed 's/ /\" \"\$/g;s/^/\$/g'`"
+        keyCol1="`echo "$5" | generate_awk_line_choose_code_with_sed`"
     fi
     if [ $# -gt 5 ]
     then
-        keyCol2="`echo "$6" | sed 's/ /\" \"\$/g;s/^/\$/g'`"
+        keyCol2="`echo "$6" | generate_awk_line_choose_code_with_sed`"
     fi
     spl=" "
     if [ $# -gt 6 ]
@@ -228,7 +261,7 @@ x()
     then
         target="$2"
     fi
-    outCol1="`echo "$target" | sed 's/ /\" \"\$/g;s/^/\$/g'`"
+    outCol1="`echo "$target" | generate_awk_line_choose_code_with_sed`"
     spl=" "
     if [ $# -gt 2 ]
     then
