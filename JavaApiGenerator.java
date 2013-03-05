@@ -6,27 +6,24 @@ import java.util.jar.*;
 class Parameter {
     String jarFileName;
     String classNamePrefix;
-
-    Parameter(String[] args) throws Exception {
-        if (args.length > 0) {
-            jarFileName = args[0];
-        } else {
-            throw new Exception("need jar file name.");
-        }
-
-        if (args.length > 1) {
-            classNamePrefix = args[1];
-        } else {
-            classNamePrefix = "";
-        }
-    }
-
-    private Parameter() {}
 }
 
 public class JavaApiGenerator {
     public static void main(String[] args) throws Exception {
-        ProcessJarFile(new Parameter(args));
+        Parameter parameter = new Parameter();
+        if (args.length > 0) {
+            parameter.jarFileName = args[0];
+        } else {
+            System.out.println("need jar file name.");
+            System.exit(1);
+        }
+
+        if (args.length > 1) {
+            parameter.classNamePrefix = args[1];
+        } else {
+            parameter.classNamePrefix = "";
+        }
+        ProcessJarFile(parameter);
     }
 
     /**
