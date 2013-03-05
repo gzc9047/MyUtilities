@@ -5,7 +5,7 @@ export grep_code_split_pattern_start="[^\"a-zA-Z0-9_]"
 export grep_code_split_pattern_end="[^\"a-zA-Z0-9_;]"
 
 # JAVA_API_LIST generator:
-# java JavaClassNameGenerator $JAR_FILE | grep '\.class$' | tr "/" "." | sed 's/.class$//g' | java -classpath .:$JAR_FILE JavaClassApiGenerator
+# jar tf $JAR_FILE | grep '\.class$' | tr "/" "." | sed 's/.class$//g' | java -classpath .:$JAR_FILE JavaClassApiGenerator
 # column format:
 # column 1: class name
 # column 2: method declaraton class name
@@ -81,6 +81,20 @@ gj()
     echo "#"
     echo "#"
     grep --color "$1" $JAVA_API_LIST
+}
+
+# grep java method info of special class
+gjc()
+{
+    if [ $# -lt 1 ]
+    then
+        echo need item.
+        return 1
+    fi
+    echo =========================================split line================================================
+    echo "#"
+    echo "#"
+    grep --color "^[^ ]*$1" $JAVA_API_LIST
 }
 
 # grep java method info
