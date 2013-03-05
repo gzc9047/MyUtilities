@@ -52,7 +52,6 @@ public class JavaApiGenerator {
     /**
      * Process one class.
      * @param className: class name.
-     * @param callback: process class callback.
      */
     private static void ProcessOneClass(String className) {
         try {
