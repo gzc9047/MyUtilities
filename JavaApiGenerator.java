@@ -60,7 +60,7 @@ public class JavaApiGenerator {
             if (klass == null) {
                 return;
             }
-            for (Method method : klass.getMethods()) {
+            for (Method method : klass.getDeclaredMethods()) {
                 System.out.println(klass.getName()
                     + " " + method.getDeclaringClass().getName()
                     + " " + method);
