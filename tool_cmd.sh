@@ -12,6 +12,15 @@ export grep_code_split_pattern_end="[^\"a-zA-Z0-9_;]"
 # reset column method signature
 export JAVA_API_LIST=~/3/code_mine/java_learn/java.api.list
 
+#make alarm data
+ma()
+{
+    tmpfile=`mktemp`
+    tmpfile_dst="$HOME/3/code_mine/MyUtilities/alarm/data/"`echo $tmpfile | x - NF /`
+    mv $tmpfile $HOME/3/code_mine/MyUtilities/alarm/data/
+    echo $@ > $tmpfile_dst
+}
+
 # grep code non-filte file.
 gn()
 {
