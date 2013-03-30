@@ -12,6 +12,25 @@ export grep_code_split_pattern_end="[^\"a-zA-Z0-9_;]"
 # reset column method signature
 export JAVA_API_LIST=~/3/code_mine/java_learn/java.api.list
 
+# format java code
+ef()
+{
+    if [ $# -lt 1 ]
+    then
+        echo need item.
+        return 1
+    fi
+    is_absolute=`echo $1 | grep '^/'`
+    if [ "$is_absolute" != "" ]
+    then
+        path="$1"
+    else
+        path=`pwd`/"$1"
+    fi
+    /Applications/eclipse/eclipse -nosplash -application org.eclipse.jdt.core.JavaCodeFormatter -verbose -config ~/3/code_work/amazon_work/org.eclipse.jdt.core.prefs $path
+}
+
+
 # grep code non-filte file.
 gn()
 {
@@ -123,7 +142,7 @@ gd()
     echo "#"
     echo "#"
     t=`echo -e "\t"`
-    git grep -nI --break --heading --or -e "^[^=$t]*[ \*]$1[ $t]*(" -e "^$1[ $t]*(" -e "define[^a-zA-Z0-9_]*$1[^a-zA-Z0-9_]"
+    git grep -nI --break --heading --or -e "^[^=$t]*[ :\*]$1[ $t]*(" -e "^$1[ $t]*(" -e "define[^a-zA-Z0-9_]*$1[^a-zA-Z0-9_]"
 }
 
 # alarm me.
