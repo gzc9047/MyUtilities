@@ -12,6 +12,32 @@ export grep_code_split_pattern_end="[^\"a-zA-Z0-9_;]"
 # reset column method signature
 export JAVA_API_LIST=~/3/code_mine/java_learn/java.api.list
 
+enable_proxy()
+{
+    if [ "`uname`" != "Darwin" ]
+    then
+        echo "No mac os, do nothing."
+        exit 1
+    fi
+    networksetup -setwebproxy Wi-Fi 127.0.0.1 8087
+    networksetup -setwebproxy Ethernet 127.0.0.1 8087 
+    networksetup -setwebproxystate Wi-Fi on
+    networksetup -setwebproxystate Ethernet on
+    echo "Web proxy enabled."
+}
+
+disable_proxy()
+{
+    if [ "`uname`" != "Darwin" ]
+    then
+        echo "No mac os, do nothing."
+        exit 1
+    fi
+    networksetup -setwebproxystate Wi-Fi off
+    networksetup -setwebproxystate Ethernet off
+    echo "Web proxy disabled."
+}
+
 # format java code
 ef()
 {
@@ -51,7 +77,7 @@ gn()
     echo =========================================split line================================================
     echo "#"
     echo "#"
-    grep --exclude=. --color -RIn "$1" .
+    grep --exclude=. --color -RIn "$1" . 2> /dev/null
 }
 
 # grep code
@@ -94,7 +120,7 @@ gu()
     echo =========================================split line================================================
     echo "#"
     echo "#"
-    git grep -nI --break --heading "$grep_code_split_pattern_start""$1""$grep_code_split_pattern_start"
+    git grep -nI --color --break --heading "$grep_code_split_pattern_start""$1""$grep_code_split_pattern_start"
 }
 
 # grep java method info
@@ -151,7 +177,7 @@ gd()
     echo "#"
     echo "#"
     t=`echo -e "\t"`
-    git grep -nI --break --heading --or -e "^[^=$t]*[ :\*]$1[ $t]*(" -e "^$1[ $t]*(" -e "define[^a-zA-Z0-9_]*$1[^a-zA-Z0-9_]"
+    git grep -nI --break --color --heading --or -e "^[^=$t]*[ :\*]$1[ $t]*(" -e "^$1[ $t]*(" -e "define[^a-zA-Z0-9_]*$1[^a-zA-Z0-9_]"
 }
 
 # alarm me.
@@ -166,8 +192,31 @@ am()
     comment=$2
     now=`date +%Y:%m:%d:%H:%M:%S`
     echo "$now $times $comment" >> $TMPDIR/am_list
-    sleep $times && \
+    nohup sleep $times 2>&1 > /dev/null && \
         open "http://localhost/alarm/index.html?$comment" && \
+        echo "$now DONE $times $comment" >> $TMPDIR/am_list \
+        &
+}
+
+amt()
+{
+    if [ $# -lt 2 ]
+    then
+        echo need time comment.
+        return 1
+    fi
+    times=$1
+    temp_file=`mktemp /Volumes/RaidRamDisk/t.XXXXXX`
+    echo "$2" > $temp_file
+    cat /Users/gzc9047/3/code_mine/MyUtilities/template.html.1 \
+        $temp_file \
+        /Users/gzc9047/3/code_mine/MyUtilities/template.html.2 \
+            > $temp_file.html
+    comment=$2
+    now=`date +%Y:%m:%d:%H:%M:%S`
+    echo "$now $times $comment" >> $TMPDIR/am_list
+    nohup sleep $times 2>&1 > /dev/null && \
+        open "$temp_file".html && \
         echo "$now DONE $times $comment" >> $TMPDIR/am_list \
         &
 }
