@@ -9,7 +9,7 @@ function! louix:GoFile(...)
     endif
 
     let tmpfile = tempname()
-    let cmd = 'grep . -m 1 -In `find $PWD | grep ' . pattern . '`'
+    let cmd = 'grep . -m 1 -HIn `find . | grep ' . pattern . '` | sed "s=$PWD==g"'
     let cmd_output = system(cmd)
 
     let old_verbose = &verbose
@@ -26,9 +26,10 @@ function! louix:GoFile(...)
     set efm=%f:%\\s%#%l:%m
 
     execute "silent! cgetfile " . tmpfile
+    tabnew
     botright copen
     let &efm = old_efm
-    call delete(tmpfile)
+"    call delete(tmpfile)
 endfunction
 
 command! -nargs=* -complete=file GoFile call louix:GoFile(<f-args>)
