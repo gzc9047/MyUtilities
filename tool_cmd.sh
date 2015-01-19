@@ -38,6 +38,13 @@ disable_proxy()
     echo "Web proxy disabled."
 }
 
+show_split_line()
+{
+    echo -e "\033[47;36m=========================================split line=====================================================================\033[0m"
+    echo -e "\033[47;36m=========================================split line=====================================================================\033[0m"
+    echo "#"
+}
+
 # format java code
 ef()
 {
@@ -74,9 +81,7 @@ gn()
         echo need item.
         return 1
     fi
-    echo =========================================split line================================================
-    echo "#"
-    echo "#"
+    show_split_line
     grep --exclude=. --color -RIn "$1" . 2> /dev/null
 }
 
@@ -88,9 +93,7 @@ gc()
         echo need item.
         return 1
     fi
-    echo =========================================split line================================================
-    echo "#"
-    echo "#"
+    show_split_line
     grep --exclude=. -RIn  "$1" . | grep_code_filte_file_name | grep --color "$1"
 }
 
@@ -102,9 +105,7 @@ gcd()
         echo need item.
         return 1
     fi
-    echo =========================================split line================================================
-    echo "#"
-    echo "#"
+    show_split_line
     grep --exclude=. "$grep_code_split_pattern_start""$1""$grep_code_split_pattern_end\|^$1""$grep_code_split_pattern_end" -RIn . | \
         grep_code_filte_file_name | grep --color "$1"
 }
@@ -117,9 +118,7 @@ gu()
         echo need item.
         return 1
     fi
-    echo =========================================split line================================================
-    echo "#"
-    echo "#"
+    show_split_line
     git grep -nI --color --break --heading "$grep_code_split_pattern_start""$1""$grep_code_split_pattern_start"
 }
 
@@ -131,9 +130,7 @@ gj()
         echo need item.
         return 1
     fi
-    echo =========================================split line================================================
-    echo "#"
-    echo "#"
+    show_split_line
     grep --color "$1" $JAVA_API_LIST
 }
 
@@ -145,9 +142,7 @@ gjc()
         echo need item.
         return 1
     fi
-    echo =========================================split line================================================
-    echo "#"
-    echo "#"
+    show_split_line
     grep --color "^[^ ]*$1" $JAVA_API_LIST
 }
 
@@ -159,9 +154,7 @@ gjm()
         echo need item.
         return 1
     fi
-    echo =========================================split line================================================
-    echo "#"
-    echo "#"
+    show_split_line
     grep --color " [^ ]*$1[^ ]*(" $JAVA_API_LIST
 }
 
@@ -173,9 +166,7 @@ gd()
         echo need item.
         return 1
     fi
-    echo =========================================split line================================================
-    echo "#"
-    echo "#"
+    show_split_line
     t=`echo -e "\t"`
     git grep -nI --break --color --heading --or -e "^[^=$t]*[ :\*]$1[ $t]*(" -e "^$1[ $t]*(" -e "define[^a-zA-Z0-9_]*$1[^a-zA-Z0-9_]"
 }
@@ -206,11 +197,11 @@ amt()
         return 1
     fi
     times=$1
-    temp_file=`mktemp /Volumes/RaidRamDisk/t.XXXXXX`
+    temp_file=`mktemp /Volumes/RaidRamDisk/alarm_html/t.XXXXXX`
     echo "$2" > $temp_file
-    cat /Users/gzc9047/3/code_mine/MyUtilities/template.html.1 \
+    cat ~/3/code_mine/MyUtilities/template.html.1 \
         $temp_file \
-        /Users/gzc9047/3/code_mine/MyUtilities/template.html.2 \
+        ~/3/code_mine/MyUtilities/template.html.2 \
             > $temp_file.html
     comment=$2
     now=`date +%Y:%m:%d:%H:%M:%S`
@@ -315,7 +306,7 @@ scf()
     then
         spl="$7"
     fi
-    gawk -F "$spl" '{
+    awk -F "$spl" '{
         if ( 1 == ARGIND )
         {
             key[ '"$keyCol1"' ] = '"$outCol1"';
@@ -361,7 +352,7 @@ sncf()
     then
         spl="$7"
     fi
-    gawk -F "$spl" '{
+    awk -F "$spl" '{
         if ( 1 == ARGIND )
         {
             key[ '"$keyCol1"' ] = '"$outCol1"';
@@ -397,3 +388,28 @@ x()
     awk -F "$spl" '{print '"$outCol1"'}' $1
 }
 
+mf()
+{
+    keyCol='$1'
+    valCol='$2'
+    if [ $# -lt 1 ]
+    then
+        echo need file.
+        return 1
+    fi
+    if [ $# -gt 1 ]
+    then
+        keyCol="`echo "$2" | generate_awk_line_choose_code_with_sed`"
+    fi
+    if [ $# -gt 2 ]
+    then
+        valCol="`echo "$3" | generate_awk_line_choose_code_with_sed`"
+    fi
+    spl=" "
+    if [ $# -gt 3 ]
+    then
+        spl="$4"
+    fi
+    awk -F "$spl" '{v['"$keyCol"']=v['"$keyCol"'] " " '$valCol'}END{for(i in v)print i,v[i]}' $1
+    return $?
+}

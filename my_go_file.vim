@@ -9,7 +9,8 @@ function! louix:GoFile(...)
     endif
 
     let tmpfile = tempname()
-    let cmd = 'grep . -m 1 -HIn `find . | grep ' . pattern . '` | sed "s=$PWD==g"'
+    let cmd = 'find . | grep /' . pattern . ' | while read file; do grep . -m 1 -HIn "$file"; done | sed "s=^$PWD==g"'
+"    let cmd = 'grep . -m 1 -HIn `find . | grep ' . pattern . '` | sed "s=$PWD==g"'
     let cmd_output = system(cmd)
 
     let old_verbose = &verbose
