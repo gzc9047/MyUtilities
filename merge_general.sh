@@ -12,11 +12,15 @@ make_split_sla()
         | sort -k1n \
         | gawk '{
             if (1 == NR) {
-                print
+                print $1 "\t" $2
             } else {
-                increase = ($2-lastSla) / 10;
-                for (i = lastSla; i < $2; i += ($2-lastSla) / 10) {
-                    printf("%0.16f %f\n", ($1 - lastT) / 10, i + increase);
+                splitNum = 10;
+                increase = ($2-lastSla) / splitNum;
+                probability = ($1 - lastT) / splitNum;
+                i = lastSla;
+                for (j = 0; j < splitNum; ++j) {
+                    i += increase;
+                    printf("%0.16f\t%f\n", probability, i);
                 }
             }
             lastT = $1;
@@ -38,12 +42,12 @@ cat $part1 \
     | gawk -f $1 \
     | sort -k2n -k1nr > $merge
     
-for i in 0.5 0.9 0.99 0.999 1
+for i in 0.5 0.9 0.99 0.999 0.9999 1
 do
     gawk '{
         p += $1;
         if (p >= '$i') {
-            print p, $2;
+            print p "\t" $2;
             exit(0)
         }
     }' $merge

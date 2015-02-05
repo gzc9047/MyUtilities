@@ -197,7 +197,7 @@ amt()
         return 1
     fi
     times=$1
-    temp_file=`mktemp /Volumes/RaidRamDisk/alarm_html/t.XXXXXX`
+    temp_file=`mktemp $TMPDIR/alarm_html/t.XXXXXX`
     echo "$2" > $temp_file
     cat ~/3/code_mine/MyUtilities/template.html.1 \
         $temp_file \
@@ -238,7 +238,7 @@ sf()
     then
         spl="$3"
     fi
-    awk -F "$spl" '{++num['"$keyCol"']}END{for(i in num)print i,num[i]}' $1
+    gawk -F "$spl" '{++num['"$keyCol"']}END{for(i in num)print i,num[i]}' $1
     return $?
 }
 
@@ -267,7 +267,7 @@ adf()
     then
         spl="$4"
     fi
-    awk -F "$spl" '{num['"$keyCol"']+=$'$valCol'}END{for(i in num)print i,num[i]}' $1
+    gawk -F "$spl" '{num['"$keyCol"']+=$'$valCol'}END{for(i in num)print i,num[i]}' $1
     return $?
 }
 
@@ -306,7 +306,7 @@ scf()
     then
         spl="$7"
     fi
-    awk -F "$spl" '{
+    gawk -F "$spl" '{
         if ( 1 == ARGIND )
         {
             key[ '"$keyCol1"' ] = '"$outCol1"';
@@ -352,7 +352,7 @@ sncf()
     then
         spl="$7"
     fi
-    awk -F "$spl" '{
+    gawk -F "$spl" '{
         if ( 1 == ARGIND )
         {
             key[ '"$keyCol1"' ] = '"$outCol1"';
@@ -385,7 +385,7 @@ x()
     then
         spl="$3"
     fi
-    awk -F "$spl" '{print '"$outCol1"'}' $1
+    gawk -F "$spl" '{print '"$outCol1"'}' $1
 }
 
 mf()
@@ -410,6 +410,6 @@ mf()
     then
         spl="$4"
     fi
-    awk -F "$spl" '{v['"$keyCol"']=v['"$keyCol"'] " " '$valCol'}END{for(i in v)print i,v[i]}' $1
+    gawk -F "$spl" '{v['"$keyCol"']=v['"$keyCol"'] " " '$valCol'}END{for(i in v)print i,v[i]}' $1
     return $?
 }
