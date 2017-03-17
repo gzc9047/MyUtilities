@@ -12,15 +12,6 @@ export grep_code_split_pattern_end="[^\"a-zA-Z0-9_;]"
 # reset column method signature
 export JAVA_API_LIST=~/3/code_mine/java_learn/java.api.list
 
-#make alarm data
-ma()
-{
-    tmpfile=`mktemp`
-    tmpfile_dst="$HOME/3/code_mine/MyUtilities/alarm/data/"`echo $tmpfile | x - NF /`
-    mv $tmpfile $HOME/3/code_mine/MyUtilities/alarm/data/
-    echo $@ > $tmpfile_dst
-}
-
 # grep code non-filte file.
 gn()
 {
@@ -157,6 +148,7 @@ am()
 # x - '3 4' => awk '{print $3, $4}'
 # x - '3 (NF-1)' => awk '{print $3, $(NF-1)}'
 
+alias generate_awk_line_choose_code_with_sed_for_x='sed "s/ /, \$/g;s/^/\$/g"'
 alias generate_awk_line_choose_code_with_sed='sed "s/ /\" \"\$/g;s/^/\$/g"'
 
 # count($column)
@@ -170,16 +162,18 @@ sf()
     then
         echo need file.
         return 1
-    elif [ $# -gt 1 ]
+    fi
+    spl=" "
+    if [ $# -gt 1 ]
     then
         keyCol="`echo "$2" | generate_awk_line_choose_code_with_sed`"
     fi
-    spl=" "
     if [ $# -gt 2 ]
     then
         spl="$3"
+        keyCol="`echo "$2" | generate_awk_line_choose_code_with_sed | sed 's/ /'$spl'/g'`"
     fi
-    awk -F "$spl" '{++num['"$keyCol"']}END{for(i in num)print i,num[i]}' $1
+    gawk -F "$spl" 'BEGIN{OFS=FS}{++num['"$keyCol"']}END{for(i in num)print i,num[i]}' $1
     return $?
 }
 
@@ -195,20 +189,23 @@ adf()
     then
         echo need file.
         return 1
-    elif [ $# -eq 2 ]
+    fi
+    
+    if [ $# -gt 1 ]
     then
         keyCol="`echo "$2" | generate_awk_line_choose_code_with_sed`"
-    elif [ $# -eq 3 ]
+    fi
+    if [ $# -gt 2 ]
     then
-        keyCol="`echo "$2" | generate_awk_line_choose_code_with_sed`"
         valCol="$3"
     fi
     spl=" "
     if [ $# -gt 3 ]
     then
         spl="$4"
+        keyCol="`echo "$2" | generate_awk_line_choose_code_with_sed | sed 's/ /'$spl'/g'`"
     fi
-    awk -F "$spl" '{num['"$keyCol"']+=$'$valCol'}END{for(i in num)print i,num[i]}' $1
+    gawk -F "$spl" 'BEGIN{OFS=FS;}{num['"$keyCol"']+=$'$valCol'}END{for(i in num)print i,num[i]}' $1
     return $?
 }
 
@@ -230,7 +227,7 @@ scf()
     then
         outCol1="`echo "$3" | generate_awk_line_choose_code_with_sed`"
     fi
-    if [ $# -gt 5 ]
+    if [ $# -gt 3 ]
     then
         outCol2="`echo "$4" | generate_awk_line_choose_code_with_sed`"
     fi
@@ -246,8 +243,16 @@ scf()
     if [ $# -gt 6 ]
     then
         spl="$7"
+        outCol1="`echo "$3" | generate_awk_line_choose_code_with_sed  | sed 's/ /'$spl'/g'`"
+        outCol2="`echo "$4" | generate_awk_line_choose_code_with_sed  | sed 's/ /'$spl'/g'`"
+        keyCol1="`echo "$5" | generate_awk_line_choose_code_with_sed  | sed 's/ /'$spl'/g'`"
+        keyCol2="`echo "$6" | generate_awk_line_choose_code_with_sed  | sed 's/ /'$spl'/g'`"
     fi
-    gawk -F "$spl" '{
+    gawk -F "$spl" '
+    BEGIN {
+        OFS = FS;
+    }
+    {
         if ( 1 == ARGIND )
         {
             key[ '"$keyCol1"' ] = '"$outCol1"';
@@ -276,7 +281,7 @@ sncf()
     then
         outCol1="`echo "$3" | generate_awk_line_choose_code_with_sed`"
     fi
-    if [ $# -gt 5 ]
+    if [ $# -gt 3 ]
     then
         outCol2="`echo "$4" | generate_awk_line_choose_code_with_sed`"
     fi
@@ -292,8 +297,16 @@ sncf()
     if [ $# -gt 6 ]
     then
         spl="$7"
+        outCol1="`echo "$3" | generate_awk_line_choose_code_with_sed  | sed 's/ /'$spl'/g'`"
+        outCol2="`echo "$4" | generate_awk_line_choose_code_with_sed  | sed 's/ /'$spl'/g'`"
+        keyCol1="`echo "$5" | generate_awk_line_choose_code_with_sed  | sed 's/ /'$spl'/g'`"
+        keyCol2="`echo "$6" | generate_awk_line_choose_code_with_sed  | sed 's/ /'$spl'/g'`"
     fi
-    gawk -F "$spl" '{
+    gawk -F "$spl" '
+    BEGIN {
+        OFS = FS;
+    }
+    {
         if ( 1 == ARGIND )
         {
             key[ '"$keyCol1"' ] = '"$outCol1"';
@@ -320,12 +333,12 @@ x()
     then
         target="$2"
     fi
-    outCol1="`echo "$target" | generate_awk_line_choose_code_with_sed`"
+    outCol1="`echo "$target" | generate_awk_line_choose_code_with_sed_for_x`"
     spl=" "
     if [ $# -gt 2 ]
     then
         spl="$3"
     fi
-    awk -F "$spl" '{print '"$outCol1"'}' $1
+    gawk -F "$spl" 'BEGIN{OFS=FS}{print '"$outCol1"'}' $1
 }
 
