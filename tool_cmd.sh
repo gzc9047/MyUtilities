@@ -357,7 +357,7 @@ tp()
     valCol="$3"
     percentage="$4"
     spl=" "
-    if [ $# -gt 5 ]
+    if [ $# -gt 4 ]
     then
         spl="$5"
         keyCol="`echo "$2" | generate_awk_line_choose_code_with_sed | sed "s/ /$spl/g"`"
@@ -368,8 +368,8 @@ tp()
     keysForExtracted="`seq $keyNumber | tr $'\n' ' ' | sed 's/ *$//g'`"
     keysColForExtracted="`echo "$keysForExtracted" | generate_awk_line_choose_code_with_sed | sed "s/ /$spl/g"`"
     cat $1 | \
-        sf - "$2" "$spl" | \
-        gawk -F "$spl" 'BEGIN{OFS=FS;}{$NF=int($NF*'"$percentage"'+0.99);print}' - \
+        sf - "$rawKeys" "$spl" | \
+        gawk -F "$spl" 'BEGIN{OFS=FS;}{$NF=int($NF*'"$percentage"'+0.99);print}' \
         > $temp_file_for_sorted_key_count
     cat $1 | \
         x - "$valCol $rawKeys" "$spl" | \
@@ -391,5 +391,7 @@ tp()
             print $0, NR - section_begin;
         }' | \
         scf $temp_file_for_sorted_key_count - "$keysForExtracted" '(NF-1) NF' "$keysForExtracted NF" "$keysForExtracted NF" "$spl"
-    return $?
+    ret=$?
+    rm $temp_file_for_sorted_key_count
+    return $ret
 }
