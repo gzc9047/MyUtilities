@@ -203,7 +203,7 @@ adf()
     if [ $# -gt 3 ]
     then
         spl="$4"
-        keyCol="`echo "$2" | generate_awk_line_choose_code_with_sed | sed 's/ /'$spl'/g'`"
+        keyCol="`echo "$2" | generate_awk_line_choose_code_with_sed | sed "s/ /$spl/g"`"
     fi
     gawk -F "$spl" 'BEGIN{OFS=FS;}{num['"$keyCol"']+=$'$valCol'}END{for(i in num)print i,num[i]}' $1
     return $?
@@ -297,10 +297,10 @@ sncf()
     if [ $# -gt 6 ]
     then
         spl="$7"
-        outCol1="`echo "$3" | generate_awk_line_choose_code_with_sed  | sed 's/ /'$spl'/g'`"
-        outCol2="`echo "$4" | generate_awk_line_choose_code_with_sed  | sed 's/ /'$spl'/g'`"
-        keyCol1="`echo "$5" | generate_awk_line_choose_code_with_sed  | sed 's/ /'$spl'/g'`"
-        keyCol2="`echo "$6" | generate_awk_line_choose_code_with_sed  | sed 's/ /'$spl'/g'`"
+        outCol1="`echo "$3" | generate_awk_line_choose_code_with_sed  | sed "s/ /$spl/g"`"
+        outCol2="`echo "$4" | generate_awk_line_choose_code_with_sed  | sed "s/ /$spl/g"`"
+        keyCol1="`echo "$5" | generate_awk_line_choose_code_with_sed  | sed "s/ /$spl/g"`"
+        keyCol2="`echo "$6" | generate_awk_line_choose_code_with_sed  | sed "s/ /$spl/g"`"
     fi
     gawk -F "$spl" '
     BEGIN {
