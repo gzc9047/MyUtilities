@@ -1,4 +1,4 @@
-function! louix:GoFile(...)
+function! Louix_GoFile(...)
     let pattern   = ""
     let argcnt = 1
     if argcnt <= a:0

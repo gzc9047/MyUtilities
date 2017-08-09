@@ -139,7 +139,7 @@ am()
     now=`date +%Y:%m:%d:%H:%M:%S`
     echo "$now $times $comment" >> $TMPDIR/am_list
     sleep $times && \
-        open "http://localhost/alarm/index.html?$comment" && \
+        open "http://localhost:8000/?$comment" && \
         echo "$now DONE $times $comment" >> $TMPDIR/am_list \
         &
 }
@@ -171,7 +171,7 @@ sf()
     if [ $# -gt 2 ]
     then
         spl="$3"
-        keyCol="`echo "$2" | generate_awk_line_choose_code_with_sed | sed 's/ /'$spl'/g'`"
+        keyCol="`echo "$2" | generate_awk_line_choose_code_with_sed | sed "s/ /$spl/g"`"
     fi
     gawk -F "$spl" 'BEGIN{OFS=FS}{++num['"$keyCol"']}END{for(i in num)print i,num[i]}' $1
     return $?
@@ -203,7 +203,7 @@ adf()
     if [ $# -gt 3 ]
     then
         spl="$4"
-        keyCol="`echo "$2" | generate_awk_line_choose_code_with_sed | sed 's/ /'$spl'/g'`"
+        keyCol="`echo "$2" | generate_awk_line_choose_code_with_sed | sed "s/ /$spl/g"`"
     fi
     gawk -F "$spl" 'BEGIN{OFS=FS;}{num['"$keyCol"']+=$'$valCol'}END{for(i in num)print i,num[i]}' $1
     return $?
@@ -243,10 +243,10 @@ scf()
     if [ $# -gt 6 ]
     then
         spl="$7"
-        outCol1="`echo "$3" | generate_awk_line_choose_code_with_sed  | sed 's/ /'$spl'/g'`"
-        outCol2="`echo "$4" | generate_awk_line_choose_code_with_sed  | sed 's/ /'$spl'/g'`"
-        keyCol1="`echo "$5" | generate_awk_line_choose_code_with_sed  | sed 's/ /'$spl'/g'`"
-        keyCol2="`echo "$6" | generate_awk_line_choose_code_with_sed  | sed 's/ /'$spl'/g'`"
+        outCol1="`echo "$3" | generate_awk_line_choose_code_with_sed  | sed "s/ /$spl/g"`"
+        outCol2="`echo "$4" | generate_awk_line_choose_code_with_sed  | sed "s/ /$spl/g"`"
+        keyCol1="`echo "$5" | generate_awk_line_choose_code_with_sed  | sed "s/ /$spl/g"`"
+        keyCol2="`echo "$6" | generate_awk_line_choose_code_with_sed  | sed "s/ /$spl/g"`"
     fi
     gawk -F "$spl" '
     BEGIN {
@@ -297,10 +297,10 @@ sncf()
     if [ $# -gt 6 ]
     then
         spl="$7"
-        outCol1="`echo "$3" | generate_awk_line_choose_code_with_sed  | sed 's/ /'$spl'/g'`"
-        outCol2="`echo "$4" | generate_awk_line_choose_code_with_sed  | sed 's/ /'$spl'/g'`"
-        keyCol1="`echo "$5" | generate_awk_line_choose_code_with_sed  | sed 's/ /'$spl'/g'`"
-        keyCol2="`echo "$6" | generate_awk_line_choose_code_with_sed  | sed 's/ /'$spl'/g'`"
+        outCol1="`echo "$3" | generate_awk_line_choose_code_with_sed  | sed "s/ /$spl/g"`"
+        outCol2="`echo "$4" | generate_awk_line_choose_code_with_sed  | sed "s/ /$spl/g"`"
+        keyCol1="`echo "$5" | generate_awk_line_choose_code_with_sed  | sed "s/ /$spl/g"`"
+        keyCol2="`echo "$6" | generate_awk_line_choose_code_with_sed  | sed "s/ /$spl/g"`"
     fi
     gawk -F "$spl" '
     BEGIN {
@@ -342,3 +342,56 @@ x()
     gawk -F "$spl" 'BEGIN{OFS=FS}{print '"$outCol1"'}' $1
 }
 
+# calculate TP X with KEY column and VALUE column.
+tp()
+{
+    if [ $# -lt 4 ]
+    then
+        echo need input_file, key_column and value_column.
+        echo tp SOME_FILE '1 2' 4 0.97
+        echo tp - '1 3 4' '5+2' 0.5 '"\t"'
+        return 1
+    fi
+    rawKeys="$2" 
+    keyCol="`echo "$2" | generate_awk_line_choose_code_with_sed`"
+    valCol="$3"
+    percentage="$4"
+    spl=" "
+    if [ $# -gt 4 ]
+    then
+        spl="$5"
+        keyCol="`echo "$2" | generate_awk_line_choose_code_with_sed | sed "s/ /$spl/g"`"
+    fi
+    mkdir -p ./tmp
+    temp_file_for_sorted_key_count=`mktemp ./tmp/temp_file_for_sorted_key_count.XXXXX`
+    keyNumber=`echo "$rawKeys" | gawk '{print NF}'`
+    keysForExtracted="`seq $keyNumber | tr $'\n' ' ' | sed 's/ *$//g'`"
+    keysColForExtracted="`echo "$keysForExtracted" | generate_awk_line_choose_code_with_sed | sed "s/ /$spl/g"`"
+    cat $1 | \
+        sf - "$rawKeys" "$spl" | \
+        gawk -F "$spl" 'BEGIN{OFS=FS;}{$NF=int($NF*'"$percentage"'+0.99);print}' \
+        > $temp_file_for_sorted_key_count
+    cat $1 | \
+        x - "$valCol $rawKeys" "$spl" | \
+        sort -t"$spl" -k2 -k1,1n | \
+        x - '0 1' "$spl" | \
+        cut -d"$spl" -f2- | \
+        gawk -F "$spl" 'BEGIN {
+            OFS = FS;
+            section_begin = 0;
+            last_line_number = 0;
+            last_key = "";
+        }
+        {
+            key = ('"$keysColForExtracted"')
+            if (last_key != key) {
+                section_begin = NR - 1;
+                last_key = key;
+            }
+            print $0, NR - section_begin;
+        }' | \
+        scf $temp_file_for_sorted_key_count - "$keysForExtracted" '(NF-1) NF' "$keysForExtracted NF" "$keysForExtracted NF" "$spl"
+    ret=$?
+    rm $temp_file_for_sorted_key_count
+    return $ret
+}
